@@ -1,0 +1,41 @@
+<!-- inappbrowser-test.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>InAppBrowser postMessage Test</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        #msg { margin-top: 2em; color: green; }
+    </style>
+</head>
+<body>
+<h1>InAppBrowser postMessage Test</h1>
+<button id="sendToApp">Send message to App</button>
+<div id="msg"></div>
+<script>
+    // Send a test message to the Cordova app when button is clicked
+    document.getElementById('sendToApp').onclick = function() {
+        var message = { hello: "from the webpage!", time: new Date().toISOString() };
+        // Use the Cordova InAppBrowser bridge (works on both Android and iOS)
+        try {
+            console.log("Sending message to app:", message);
+            window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
+        } catch (e) {
+            // Fallback for Android (sometimes window.webkit might not exist, but the method does)
+            console.log("Fallback to cordova_iab.postMessage:", message);
+            if (window.cordova_iab && typeof window.cordova_iab.postMessage === 'function') {
+                window.cordova_iab.postMessage(JSON.stringify(message));
+            } else {
+                alert("postMessage API not available.");
+            }
+        }
+    };
+
+    // Optionally, receive data *from* the app (injected with executeScript)
+    window.addEventListener('message', function(event) {
+        document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(event.data);
+    }, false);
+</script>
+</body>
+</html>
