@@ -7,12 +7,12 @@
         body { font-family: Arial, sans-serif; margin: 2em; }
         #msg { margin-top: 2em; color: green; }
     </style>
-    <script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/app-card-services.js"></script>
 </head>
 <body>
 <h1>InAppBrowser postMessage Test</h1>
 <button id="sendToApp">Send message to App</button>
 <div id="msg"></div>
+<script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/app-card-services.js"></script>
 <script>
     // Send a test message to the Cordova app when button is clicked
     document.getElementById('sendToApp').onclick = function() {
@@ -23,8 +23,14 @@
         };
         console.log("Sending message to app:", message);
 
-        window.appCardSDK.postAction('appCardLogin', message);
-        // window.appCardSDK.doAppCardLogin(message);
+        if( typeof window.appCardSDK !== 'undefined') {
+            // Use the AppCardSDK to send the message
+            window.appCardSDK.postAction('appCardLogin', message);
+            // window.appCardSDK.doAppCardLogin(message);
+        } else {
+            console.error("AppCardSDK is not available.");
+          //  return;
+        }
 
         setTimeout(() => {
             // document.getElementById('msg').textContent = 'Message sent to app: ' + JSON.stringify(message);
