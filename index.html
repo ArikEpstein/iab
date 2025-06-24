@@ -28,9 +28,11 @@
     // Send a test message to the Cordova app when button is clicked
     document.getElementById('sendToApp').onclick = function() {
         const message = {
-            hello: "from the webpage!",
             state: 'coupons',
-            widgetId: '123'
+            data: {
+                widgetId: '123',
+                hello: "from the webpage!",
+            },
         };
         console.log("Sending message to app:", message);
         appCard.sendAction('login', message);
