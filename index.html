@@ -7,24 +7,24 @@
         body { font-family: Arial, sans-serif; margin: 2em; }
         #msg { margin-top: 2em; color: green; }
     </style>
+    <script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/app-card-services.js"></script>
 </head>
 <body>
 <h1>InAppBrowser postMessage Test</h1>
 <button id="sendToApp">Send message to App</button>
 <div id="msg"></div>
-<script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/appcard-sdk.js"></script>
 <script>
-    // Initialize AppCard
-    const appCard = new AppCardSDK();
-
     // Send a test message to the Cordova app when button is clicked
     document.getElementById('sendToApp').onclick = function() {
-        appCard.sendAction('login', {
-            massage: 'Hello from the web!',
-            state: `add-${productId}`,
-            data: { productId, price },
-            widgetId: '123',
-        });
+        var message = {
+            hello: "from the webpage!",
+            state: 'additional-data',
+            widgetId: '123'
+        };
+        console.log("Sending message to app:", message);
+        // var message = { hello: "from the webpage!", time: new Date().toISOString() };
+        // window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
+        window.appCardSDK.doAppCardLogin(message);
     }
 
     // Receive data *from* the app
