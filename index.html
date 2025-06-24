@@ -12,7 +12,6 @@
 <h1>InAppBrowser postMessage Test</h1>
 <button id="sendToApp">Send message to App</button>
 <div id="msg"></div>
-<script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/app-card-services.js"></script>
 <script>
     // Send a test message to the Cordova app when button is clicked
     document.getElementById('sendToApp').onclick = function() {
@@ -23,29 +22,29 @@
         };
         console.log("Sending message to app:", message);
 
-        if( typeof window.appCardSDK !== 'undefined') {
-            // Use the AppCardSDK to send the message
-            window.appCardSDK.postAction('appCardLogin', message);
-            // window.appCardSDK.doAppCardLogin(message);
-        } else {
-            console.error("AppCardSDK is not available.");
-          //  return;
-        }
-
-        setTimeout(() => {
-            // document.getElementById('msg').textContent = 'Message sent to app: ' + JSON.stringify(message);
-            try {
-                if (window?.webkit?.messageHandlers?.cordova_iab) {
-                    window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
-                } else if (window?.cordova_iab && typeof window.cordova_iab.postMessage === 'function') {
-                    window.cordova_iab.postMessage(JSON.stringify(message));
-                } else {
-                    console.error("Cordova InAppBrowser bridge not available.");
+        try {
+            if (window?.webkit?.messageHandlers?.cordova_iab || (window?.cordova_iab && typeof window.cordova_iab.postMessage === 'function')) {
+                // Cordova/Native flow
+                try {
+                    if (window?.webkit?.messageHandlers?.cordova_iab) {
+                        window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
+                    } else if (window?.cordova_iab && typeof window.cordova_iab.postMessage === 'function') {
+                        window.cordova_iab.postMessage(JSON.stringify(message));
+                    } else {
+                        console.error("Cordova InAppBrowser bridge not available.");
+                    }
+                } catch (nativeErr) {
+                    console.error("[AppCardSDK] Native bridge error:", nativeErr);
                 }
-            } catch (nativeErr) {
-                console.error("[AppCardSDK] Native bridge error:", nativeErr);
+            } else if (window.parent && window.parent !== window) {
+                // Web iframe-to-parent flow
+                 window.parent.postMessage(message, "https://*.appcard.com/*");
+            } else {
+                console.error("No parent window for messaging.");
             }
-        }, 10000);
+        } catch (err) {
+            console.error("[AppCardSDK] postActionToParent failed:", err);
+        }
     }
 
 
@@ -53,6 +52,31 @@
     window.addEventListener('message', function(event) {
         document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(event.data);
     }, false);
+</script>
+<script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/appcard-sdk.js"></script>
+<script>
+    // Initialize AppCard
+    const appCard = new AppCardSDK();
+
+    appCard.on('success', (response) => {
+        console.log('Login successful:', response);
+    });
+
+    appCard.on('error', (response) => {
+        alert('Login failed: ' + response.params.message);
+    });
+
+    // Login button
+    function startLogin() {
+        appCard.sendAction('login', {
+            state: 'browsing'
+        });
+    }
+
+    setTimeout(() => {
+        // Automatically start login after 2 seconds
+        startLogin();
+    }, 12000);
 </script>
 </body>
 </html>
