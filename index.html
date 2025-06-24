@@ -38,7 +38,7 @@
                 }
             } else if (window.parent && window.parent !== window) {
                 // Web iframe-to-parent flow
-                 window.parent.postMessage(message, "https://*.appcard.com/*");
+                 window.parent.postMessage(message, "*");
             } else {
                 console.error("No parent window for messaging.");
             }
