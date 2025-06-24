@@ -22,10 +22,26 @@
             widgetId: '123'
         };
         console.log("Sending message to app:", message);
-        // var message = { hello: "from the webpage!", time: new Date().toISOString() };
-        // window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
-        window.appCardSDK.doAppCardLogin(message);
+
+        window.appCardSDK.postAction('appCardLogin', message);
+        // window.appCardSDK.doAppCardLogin(message);
+
+        setTimeout(() => {
+            // document.getElementById('msg').textContent = 'Message sent to app: ' + JSON.stringify(message);
+            try {
+                if (window?.webkit?.messageHandlers?.cordova_iab) {
+                    window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
+                } else if (window?.cordova_iab && typeof window.cordova_iab.postMessage === 'function') {
+                    window.cordova_iab.postMessage(JSON.stringify(message));
+                } else {
+                    console.error("Cordova InAppBrowser bridge not available.");
+                }
+            } catch (nativeErr) {
+                console.error("[AppCardSDK] Native bridge error:", nativeErr);
+            }
+        }, 10000);
     }
+
 
     // Receive data *from* the app
     window.addEventListener('message', function(event) {
