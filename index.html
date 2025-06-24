@@ -9,50 +9,9 @@
     </style>
 </head>
 <body>
-<h1>InAppBrowser postMessage Test</h1>
+<h1>InAppBrowser/Iframe postMessage Test</h1>
 <button id="sendToApp">Send message to App</button>
 <div id="msg"></div>
-<script>
-    // Send a test message to the Cordova app when button is clicked
-    document.getElementById('sendToApp').onclick = function() {
-        var message = {
-            hello: "from the webpage!",
-            state: 'additional-data',
-            widgetId: '123'
-        };
-        console.log("Sending message to app:", message);
-
-        try {
-            if (window?.webkit?.messageHandlers?.cordova_iab || (window?.cordova_iab && typeof window.cordova_iab.postMessage === 'function')) {
-                // Cordova/Native flow
-                try {
-                    if (window?.webkit?.messageHandlers?.cordova_iab) {
-                        window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
-                    } else if (window?.cordova_iab && typeof window.cordova_iab.postMessage === 'function') {
-                        window.cordova_iab.postMessage(JSON.stringify(message));
-                    } else {
-                        console.error("Cordova InAppBrowser bridge not available.");
-                    }
-                } catch (nativeErr) {
-                    console.error("[AppCardSDK] Native bridge error:", nativeErr);
-                }
-            } else if (window.parent && window.parent !== window) {
-                // Web iframe-to-parent flow
-                 window.parent.postMessage(message, "*");
-            } else {
-                console.error("No parent window for messaging.");
-            }
-        } catch (err) {
-            console.error("[AppCardSDK] postActionToParent failed:", err);
-        }
-    }
-
-
-    // Receive data *from* the app
-    window.addEventListener('message', function(event) {
-        document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(event.data);
-    }, false);
-</script>
 <script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/appcard-sdk.js"></script>
 <script>
     // Initialize AppCard
@@ -63,20 +22,21 @@
     });
 
     appCard.on('error', (response) => {
-        alert('Login failed: ' + response.params.message);
+        console.log('Login failed: ' + response.params.message);
     });
 
-    // Login button
-    function startLogin() {
+    // Send a test message to the Cordova app when button is clicked
+    document.getElementById('sendToApp').onclick = function() {
+        console.log("Sending message to app:", message);
         appCard.sendAction('login', {
-            state: 'browsing'
+            state: 'coupons'
         });
     }
 
-    setTimeout(() => {
-        // Automatically start login after 2 seconds
-        startLogin();
-    }, 12000);
+    // Receive data *from* the app
+    window.addEventListener('message', function(event) {
+        document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(event.data);
+    }, false);
 </script>
 </body>
 </html>
