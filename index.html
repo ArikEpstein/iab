@@ -1,4 +1,3 @@
-<!-- inappbrowser-test.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,26 +12,22 @@
 <h1>InAppBrowser postMessage Test</h1>
 <button id="sendToApp">Send message to App</button>
 <div id="msg"></div>
+<script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/appcard-sdk.js"></script>
 <script>
+    // Initialize AppCard
+    const appCard = new AppCardSDK();
+
     // Send a test message to the Cordova app when button is clicked
     document.getElementById('sendToApp').onclick = function() {
-        var message = { hello: "from the webpage!", time: new Date().toISOString() };
-        // Use the Cordova InAppBrowser bridge (works on both Android and iOS)
-        try {
-            console.log("Sending message to app:", message);
-            window.webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(message));
-        } catch (e) {
-            // Fallback for Android (sometimes window.webkit might not exist, but the method does)
-            console.log("Fallback to cordova_iab.postMessage:", message);
-            if (window.cordova_iab && typeof window.cordova_iab.postMessage === 'function') {
-                window.cordova_iab.postMessage(JSON.stringify(message));
-            } else {
-                alert("postMessage API not available.");
-            }
-        }
-    };
+        appCard.sendAction('login', {
+            massage: 'Hello from the web!',
+            state: `add-${productId}`,
+            data: { productId, price },
+            widgetId: '123',
+        });
+    }
 
-    // Optionally, receive data *from* the app (injected with executeScript)
+    // Receive data *from* the app
     window.addEventListener('message', function(event) {
         document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(event.data);
     }, false);
