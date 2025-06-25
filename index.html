@@ -22,20 +22,23 @@
     });
 
     appCard.on('error', (response) => {
-        console.log('Login failed: ' + response.params.message);
+        console.error('Login failed: ' + response.params.message);
     });
 
     // Send a test message to the Cordova app when button is clicked
     document.getElementById('sendToApp').onclick = function() {
         const message = {
-            state: 'coupons',
+            state: {
+               page: 'coupons',
+               couponId: 1234,
+            },
             data: {
                 widgetId: '123',
                 hello: "from the webpage!",
             },
         };
         console.log("Sending message to app:", message);
-        appCard.sendAction('login', message);
+        appCard.sendEvent('login', message);
     }
 
     // Receive data *from* the app
