@@ -21,7 +21,7 @@
     if (response && Object.keys(response).length > 0) {
         console.log('User token:', response?.token ?? '');
         console.log('User state:', response?.state ?? '');
-        alert(appCardSdk?.state);
+        alert(appCardSdk?.state ?? 'Empty state');
         document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
     }
 
@@ -31,7 +31,7 @@
         if (response && Object.keys(response).length > 0) {
             console.log('User token:', response?.token ?? '');
             console.log('User state:', response?.state ?? '');
-            alert(response?.state);
+            alert(response?.state ?? 'Empty state');
             document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
         }
 
@@ -43,8 +43,9 @@
             widgetId: '123',
             hello: "from the webpage!",
         };
+
         console.log("Sending message to app:", message);
-        appCardSdk.sendLoginEvent('login', message);
+        appCardSdk.sendLoginEvent(message);
     }
 
     // Receive data *from* the app
