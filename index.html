@@ -17,24 +17,24 @@
     // Initialize AppCard
     window.appCardSdk = new AppCardSDK({ debug: true });
 
-    const response = appCardSdk.getUserDetails();
-    if (response && Object.keys(response).length > 0) {
-        console.log('User token:', response?.token ?? '');
-        console.log('User state:', response?.state ?? '');
-        alert(appCardSdk?.state ?? 'Empty state');
-        document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
+    // Get user data after authentication (async/await)
+    async function getUserData() {
+        try {
+            const response = await appCardSdk.getUserDetails();
+            if (await appCardSdk.hasSuccessfulResponse()) {
+                console.log('User token:', response?.token ?? '');
+                console.log('User state:', response?.state ?? '');
+                document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
+            }
+        } catch (error) {
+            // console.error('Failed to get user data:', error);
+        }
     }
 
-    // Send a test message to the Cordova app when button is clicked
-    document.getElementById('sendToApp').onclick = function() {
-        const response = appCardSdk.getUserDetails();
-        if (response && Object.keys(response).length > 0) {
-            console.log('User token:', response?.token ?? '');
-            console.log('User state:', response?.state ?? '');
-            alert(response?.state ?? 'Empty state');
-            document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
-        }
+    getUserData();
 
+    // Send a test message to the Cordova app when button is clicked
+    document.getElementById('sendToApp').onclick = async function () {
         const message = {
             state: {
                 page: 'coupons',
@@ -45,7 +45,13 @@
         };
 
         console.log("Sending message to app:", message);
-        appCardSdk.sendLoginEvent(message);
+
+        try {
+            await appCardSdk.sendLoginEvent(message);
+            console.log('Login event sent successfully');
+        } catch (error) {
+            console.error('Failed to send login:', error);
+        }
     }
 
     // Receive data *from* the app
