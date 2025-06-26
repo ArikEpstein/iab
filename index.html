@@ -15,22 +15,28 @@
 <script src="https://ddw0wefgxthin.cloudfront.net/assets/branded/appcard-sdk.js"></script>
 <script>
     // Initialize AppCard
-    const appCard = new AppCardSDK();
+    const appCard = new AppCardSDK({ debug: true });
 
-    appCard.on('success', (response) => {
-        console.log('Login successful:', response);
-    });
-
-    appCard.on('error', (response) => {
-        console.error('Login failed: ' + response.params.message);
-    });
+    const response = appCard.getUserDetails();
+    if (response && Object.keys(response).length > 0) {
+        console.log('User token:', response.token);
+        console.log('User state:', appCard.state);
+        document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
+    }
 
     // Send a test message to the Cordova app when button is clicked
     document.getElementById('sendToApp').onclick = function() {
+        const response = appCard.getUserDetails();
+        if (response && Object.keys(response).length > 0) {
+            console.log('User token:', response.token);
+            console.log('User state:', appCard.state);
+            document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
+        }
+
         const message = {
             state: {
-               page: 'coupons',
-               couponId: 1234,
+                page: 'coupons',
+                couponId: 1234,
             },
             data: {
                 widgetId: '123',
@@ -38,7 +44,7 @@
             },
         };
         console.log("Sending message to app:", message);
-        appCard.sendEvent('login', message);
+        appCard.sendLoginEvent('login', message);
     }
 
     // Receive data *from* the app
