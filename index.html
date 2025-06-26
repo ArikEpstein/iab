@@ -19,8 +19,8 @@
 
     const response = appCardSdk.getUserDetails();
     if (response && Object.keys(response).length > 0) {
-        console.log('User token:', response?.token);
-        console.log('User state:', response?.state);
+        console.log('User token:', response?.token ?? '');
+        console.log('User state:', response?.state ?? '');
         alert(appCardSdk?.state);
         document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
     }
@@ -29,8 +29,8 @@
     document.getElementById('sendToApp').onclick = function() {
         const response = appCardSdk.getUserDetails();
         if (response && Object.keys(response).length > 0) {
-            console.log('User token:', response?.token);
-            console.log('User state:', response?.state);
+            console.log('User token:', response?.token ?? '');
+            console.log('User state:', response?.state ?? '');
             alert(response?.state);
             document.getElementById('msg').textContent = 'Received from app: ' + JSON.stringify(response);
         }
